@@ -4,10 +4,9 @@ from config.Database import db, Curso, Modulo
 
 class CursoModel:
     @staticmethod
-    def criar_curso(bodyresponse: CourseResponse):
+    def criar_curso():
         body = CourseCreate.parse_obj(request.json)
 
-        # Cria o curso
         curso = Curso(
             titulo=body.titulo,
             descricao=body.descricao,
@@ -15,7 +14,6 @@ class CursoModel:
             xp_total=body.xp_total
         )
 
-        # Cria os módulos e os associa ao curso
         for modulo in body.modulos:
             modulo_obj = Modulo(nome=modulo.nome, curso=curso)
             db.session.add(modulo_obj)
@@ -23,22 +21,23 @@ class CursoModel:
         db.session.add(curso)
         db.session.commit()
 
-        return jsonify(message = "Curso criado com sucesso", curso_id = bodyresponse.dict()), 201
+        response = CourseResponse.from_orm(curso)
+        return jsonify(message ="Curso criado com sucesso", curso_response=response), 201
 
     @staticmethod
-    def busca_nome(body: CourseCreate, nome):
-        curso = Curso.query.get(nome)
+    def busca_nome(titulo):
+        curso = Curso.query.filter_by(titulo=titulo).first()
 
         if curso:
-            return jsonify(message = "Curso:", dados = body.dict()), 200
+            return jsonify(message ="Curso:", dados =curso), 200
         else:
-            return jsonify(message = "Curso nao encontrado"), 400
+            return jsonify(message ="Curso nao encontrado"), 400
         
     @staticmethod
-    def busca_id(body: CourseCreate, id):
+    def busca_id(id):
         curso = Curso.query.get(id)
 
         if curso:
-            return jsonify(message = "Curso:", dados = body.dict()), 200
+            return jsonify(message ="Curso:", dados =curso), 200
         else:
-            return jsonify(message = "Curso nao encontrado"), 400
+            return jsonify(message ="Curso nao encontrado"), 400
