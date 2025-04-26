@@ -6,12 +6,13 @@ class UserBase(BaseModel):
     nome: str
     email: EmailStr
     senha_hash: str
-    challenges: int
-    nivel: int
-    xp_total: int
+    challenges: int = 0
+    nivel: int = 0
+    xp_total: int = 0
 
     class Config:
         orm_mode = True
+
 
 
 class UserCreate(UserBase):

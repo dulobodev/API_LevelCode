@@ -2,16 +2,19 @@ from schemas.AulaSchema import ClassCreate, ClassResponse
 from flask import jsonify
 from config.Database import db, Aula
 
-class UsuarioModel:
+class AulaModel:
     @staticmethod
-    def criar_usuario(body: ClassCreate):
-        nova_aula = Aula(**body.dict())
+    def criar_aula(body: ClassCreate):
+        try:
+            nova_aula = Aula(**body.dict())
 
-        db.session.add(nova_aula)
-        db.session.commit()
+            db.session.add(nova_aula)
+            db.session.commit()
 
-        response = ClassResponse.from_orm(nova_aula)
-        return jsonify(message ='Aula criada com sucesso!', aula =response.dict()), 201
+            response = ClassResponse.from_orm(nova_aula)
+            return jsonify(message ='Aula criada com sucesso!', aula =response.dict()), 201
+        except:
+            return jsonify(erro = "Erro ao tentar criar uma Conquista,     FAÇA O L"), 400
 
     @staticmethod
     def busca_nome(titulo):

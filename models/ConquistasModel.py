@@ -5,12 +5,15 @@ from config.Database import db, Conquista
 class ConquistaModel:
     @staticmethod
     def criar_conquista(body: ConquestBase, bodyresponse:ConquestResponse):
-        nova_conquista = Conquista(**body.dict())
+        try:
+            nova_conquista = Conquista(**body.dict())
 
-        db.session.add(nova_conquista)
-        db.session.commit()
+            db.session.add(nova_conquista)
+            db.session.commit()
 
-        return jsonify(message = 'Conquista criado com sucesso!', conquista = bodyresponse.dict()), 201
+            return jsonify(message = 'Conquista criado com sucesso!', conquista = bodyresponse.dict()), 201
+        except:
+            return jsonify(erro = "Erro ao tentar criar uma Conquista,     FAÇA O L"), 400
 
     @staticmethod
     def busca_nome(body: ConquestBase, nome):

@@ -5,24 +5,27 @@ from config.Database import db, Curso, Modulo
 class CursoModel:
     @staticmethod
     def criar_curso():
-        body = CourseCreate.parse_obj(request.json)
+        try:
+            body = CourseCreate.parse_obj(request.json)
 
-        curso = Curso(
-            titulo=body.titulo,
-            descricao=body.descricao,
-            dificuldade=body.dificuldade,
-            xp_total=body.xp_total
-        )
+            curso = Curso(
+                titulo=body.titulo,
+                descricao=body.descricao,
+                dificuldade=body.dificuldade,
+                xp_total=body.xp_total
+            )
 
-        for modulo in body.modulos:
-            modulo_obj = Modulo(nome=modulo.nome, curso=curso)
-            db.session.add(modulo_obj)
+            for modulo in body.modulos:
+                modulo_obj = Modulo(nome=modulo.nome, curso=curso)
+                db.session.add(modulo_obj)
 
-        db.session.add(curso)
-        db.session.commit()
+            db.session.add(curso)
+            db.session.commit()
 
-        response = CourseResponse.from_orm(curso)
-        return jsonify(message ="Curso criado com sucesso", curso_response=response), 201
+            response = CourseResponse.from_orm(curso)
+            return jsonify(message ="Curso criado com sucesso", curso_response=response), 201
+        except:
+            return jsonify(erro = "Erro ao tentar criar um Curso,     FAÇA O L"), 400
 
     @staticmethod
     def busca_nome(titulo):

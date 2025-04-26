@@ -17,6 +17,7 @@ class Usuario(db.Model):
     desafios: Mapped[int] = mapped_column(default=0, nullable=False)
     nivel: Mapped[int] = mapped_column(default=0, nullable=False)
     xp_total: Mapped[int] = mapped_column(default=0, nullable=False)
+    roles
 
     conquistas: Mapped[List["UsuarioConquista"]] = relationship("UsuarioConquista", back_populates="usuario")
     progresso: Mapped[List["Progresso"]] = relationship("Progresso", back_populates="usuario")
