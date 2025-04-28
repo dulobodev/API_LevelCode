@@ -25,8 +25,8 @@ class ConquistaModel:
             return jsonify(message = "Conquista nao encontrado"), 400
         
     @staticmethod
-    def busca_id(body: id):
-        conquista = Conquista.query.get(id)
+    def get_conquista():
+        conquista = db.session.query(Conquista).all()
 
         if conquista:
             return jsonify(message = "Conquista:", dados = conquista), 200

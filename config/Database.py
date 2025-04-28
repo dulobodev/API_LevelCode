@@ -1,11 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy import String, ForeignKey, DateTime, Table
 from sqlalchemy.sql import func
 import datetime
 from typing import List
 
 db = SQLAlchemy()
+
+
+role_permission = Table(
+    'role_permission',
+    db.metadata,
+    db.Column('role_id', ForeignKey('roles.id'), primary_key=True),
+    db.Column('permission_id', ForeignKey('permissions.id'), primary_key=True))
+
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
@@ -13,15 +21,33 @@ class Usuario(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(60), nullable=False)
     email: Mapped[str] = mapped_column(String(80), nullable=False)
-    senha_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    senha: Mapped[str] = mapped_column(String(64), nullable=False)
     desafios: Mapped[int] = mapped_column(default=0, nullable=False)
     nivel: Mapped[int] = mapped_column(default=0, nullable=False)
     xp_total: Mapped[int] = mapped_column(default=0, nullable=False)
-    roles
+    roles_id : Mapped[int] = mapped_column(ForeignKey('roles.id'))
 
     conquistas: Mapped[List["UsuarioConquista"]] = relationship("UsuarioConquista", back_populates="usuario")
     progresso: Mapped[List["Progresso"]] = relationship("Progresso", back_populates="usuario")
     rankings: Mapped[List["Ranking"]] = relationship("Ranking", back_populates="usuario")
+    role: Mapped["Role"] = relationship("Role", back_populates="users")
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nome: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+
+    permissions: Mapped[list["Permission"]] = relationship("Permission", secondary=role_permission, back_populates="roles")
+    users: Mapped[list["Usuario"]] = relationship("Usuario", back_populates="role")
+
+class Permission(db.Model):
+    __tablename__ = 'permissions'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nome: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+
+    roles: Mapped[list["Role"]] = relationship("Role", secondary=role_permission, back_populates="permissions")
 
 class Curso(db.Model):
     __tablename__ = 'cursos'
@@ -109,5 +135,6 @@ class Ranking(db.Model):
     privilegios: Mapped[str] = mapped_column(String(3000), nullable=False)
     requisitos: Mapped[str] = mapped_column(String(500), nullable=False)
     data_criacao: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
+    
+    user_id: Mapped[int] = mapped_column(ForeignKey('usuarios.id'))
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="rankings")

@@ -26,8 +26,8 @@ class ModuloModel:
             return jsonify(message ="Modulo nao encontrado"), 400
         
     @staticmethod
-    def busca_id(id):
-        modulo = Modulo.query.get(id)
+    def get_modulo():
+        modulo = db.session.query(Modulo).all()
 
         if modulo:
             return jsonify(message ="Modulo:", dados =modulo), 200

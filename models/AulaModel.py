@@ -26,9 +26,9 @@ class AulaModel:
             return jsonify(message ="Aula nao encontrado"), 400
         
     @staticmethod
-    def busca_id(id):
-        aula = Aula.query.get(id)
-
+    def get_aula():
+        aula = db.session.query(Aula).all()
+        
         if aula:
             return jsonify(message ="Aula:", dados =aula), 200
         else:

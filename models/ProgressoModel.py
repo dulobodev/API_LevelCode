@@ -1,4 +1,4 @@
-from schemas.ProgressoSchema import 
+from schemas.ProgressoSchema import ProgressBase
 from flask import jsonify
 from config.Database import db, Progresso
 

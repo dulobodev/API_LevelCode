@@ -25,8 +25,8 @@ class DesafioModel:
             return jsonify(message ="desafio nao encontrado"), 400
         
     @staticmethod
-    def busca_id(id):
-        desafio = Desafio.query.get(id)
+    def get_desafio():
+        desafio = db.session.query(Desafio).all()
 
         if desafio:
             return jsonify(message ="desafio:", dados =desafio), 200

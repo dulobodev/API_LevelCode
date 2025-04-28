@@ -27,8 +27,8 @@ class RankingModel:
             return jsonify(message ="Ranking nao encontrado"), 400
         
     @staticmethod
-    def busca_id(id):
-        ranking = Ranking.query.get(id)
+    def get_ranking():
+        ranking = db.session.query(Ranking).all()
 
         if ranking:
             return jsonify(message ="Ranking:", dados =ranking), 200

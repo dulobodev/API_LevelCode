@@ -7,6 +7,7 @@ class RankingBase(BaseModel):
     privilegios: str
     requisitos: str
     created_date: datetime
+    user_id: int
 
     class Config:
         orm_mode = True

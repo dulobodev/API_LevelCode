@@ -1,24 +1,11 @@
-from schemas.CursosSchema import CourseCreate, CourseResponse
-from flask import jsonify, request
-from config.Database import db, Curso, Modulo
+from schemas.CursosSchema import CourseResponse
+from flask import jsonify
+from config.Database import db, Curso
 
 class CursoModel:
     @staticmethod
-    def criar_curso():
+    def criar_curso(curso):
         try:
-            body = CourseCreate.parse_obj(request.json)
-
-            curso = Curso(
-                titulo=body.titulo,
-                descricao=body.descricao,
-                dificuldade=body.dificuldade,
-                xp_total=body.xp_total
-            )
-
-            for modulo in body.modulos:
-                modulo_obj = Modulo(nome=modulo.nome, curso=curso)
-                db.session.add(modulo_obj)
-
             db.session.add(curso)
             db.session.commit()
 
@@ -37,8 +24,8 @@ class CursoModel:
             return jsonify(message ="Curso nao encontrado"), 400
         
     @staticmethod
-    def busca_id(id):
-        curso = Curso.query.get(id)
+    def get_curso():
+        curso = db.session.query(Curso).all()
 
         if curso:
             return jsonify(message ="Curso:", dados =curso), 200

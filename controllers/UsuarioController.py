@@ -1,7 +1,9 @@
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
-from models.UsuarioModel import UsuarioModel, UserCreate
+from schemas.UsuarioSchema import UserCreate
+from models.UsuarioModel import UsuarioModel
+from config.Database import Role
 from flask import jsonify
 
 def senha_forte(senha):
@@ -11,26 +13,34 @@ def senha_forte(senha):
             re.search(r"[0-9]", senha) and
             re.search(r"[@#$%^&*(),.?\":{}|<>]", senha))
 
-def registrar_usuario(dados: UserCreate):
-    nome = dados.nome
-    email = dados.email
-    senha_hash = dados.senha_hash
+class UsuarioControllers:
 
-    if not senha_forte(senha_hash):
-        return jsonify(erro ="A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."), 400
-    if UsuarioModel.busca_email(email):
-        return {"error": "E-mail já cadastrado"}, 400
-    
-    senha_hash = generate_password_hash(senha_hash)
-    UsuarioModel.criar_usuario(nome, senha_hash, email)
+    @staticmethod
+    def registrar_usuario(dados: UserCreate):
+        nome = dados.nome
+        email = dados.email
+        senha = dados.senha
 
-def login(dados: UserCreate):
-    nome = dados.nome
-    senha= dados.senha_hash
+        if not senha_forte(senha):
+            return jsonify(erro ="A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."), 422
+        if UsuarioModel.busca_email(email):
+            return {"error": "E-mail já cadastrado"}, 400
+        
+        senha = generate_password_hash(senha)
+        UsuarioModel.criar_usuario(nome, senha, email)
 
-    usuario = UsuarioModel.busca_nome(nome)
-    if usuario and check_password_hash(usuario['senha_hash'], senha):
-        token = create_access_token(identity=str(usuario['id']))
-        return {"access_token": token}, 200
-    return {"error": "Nome de usuário ou senha inválidos"}, 401
+    @staticmethod
+    def login(dados: UserCreate):
+        nome = dados.nome
+        senha= dados.senha
+
+        usuario = UsuarioModel.busca_nome(nome)
+        if usuario and check_password_hash(usuario['senha'], senha):
+            role = Role.query.get(usuario['role_id'])
+
+            identity = {"id": usuario['id'],"role": role.nome}
+
+            token = create_access_token(identity=identity)
+            return {"access_token": token}, 200
+        return {"error": "Nome de usuário ou senha inválidos"}, 401
 
