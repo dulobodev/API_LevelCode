@@ -7,13 +7,13 @@ from models.CursoModel import CursoModel
 curso_bp = Blueprint('curso', __name__)
 
 @curso_bp.route('/register_curso', endpoint='curso1', methods=['POST'])
-@jwt_required
+@jwt_required()
 @admin_required('PoderAdemiro')
 def register_curso():
-    return CursoController.registrar_curso(request.get_json())
+    return CursoController.registrar_curso()
 
 @curso_bp.route('/get_curso', endpoint='cruso2', methods=['GET'])
-@jwt_required
+@jwt_required()
 @admin_required('PoderAdemiro')
 def get_c():
     return CursoModel.get_curso()

@@ -19,4 +19,4 @@ class RolesCreate(BaseModel):
     permissions: List[PermissionCreate] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

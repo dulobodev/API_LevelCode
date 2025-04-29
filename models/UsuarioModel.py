@@ -4,14 +4,7 @@ from config.Database import db, Usuario
 
 class UsuarioModel:
     @staticmethod
-    def criar_usuario(nome, senha, email, role):
-        novo_usuario = Usuario(
-            nome=nome,
-            senha=senha,
-            email=email,
-            role=role  # Passando a instância da Role, não o id
-        )
-
+    def criar_usuario(novo_usuario):
         try:
             db.session.add(novo_usuario)
             db.session.commit()
@@ -19,7 +12,6 @@ class UsuarioModel:
             response = UserResponse.from_orm(novo_usuario)
             return jsonify(message='Usuário criado com sucesso!', usuario=response.dict()), 201
         except Exception as e:
-            # Aqui trata-se a exceção e retorna a mensagem de erro
             print(f"Erro: {e}")
             return jsonify(erro="Erro ao tentar criar um usuário"), 400
 

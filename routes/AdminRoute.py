@@ -26,4 +26,4 @@ def register_admin():
 
 @admin_bp.route('/login_admin', endpoint='admin4',methods=['POST'])
 def login():
-    return AdminController.login_admin()
+    return AdminController.login_admin(request.get_json())

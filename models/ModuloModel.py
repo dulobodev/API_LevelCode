@@ -1,29 +1,27 @@
 from schemas.ModuloSchema import ModuleCreate, ModuleResponse
-from flask import jsonify
+from flask import jsonify, request
 from config.Database import db, Modulo
 
 class ModuloModel:
     @staticmethod
-    def criar_modulo(body: ModuleCreate):
-        novo_modulo = Modulo(**body.dict())
-        
+    def criar_modulo():
         try:
-            db.session.add(novo_modulo)
+            body = Modulo(**request.get_json())
+            
+            modulo = Modulo(nome=body.nome)
+            db.session.add(modulo)
             db.session.commit()
 
-            response = ModuleResponse.from_orm(novo_modulo)
-            return jsonify(message ='Modulo criado com sucesso!', modulo =response.dict()), 201
-        except:
-            return jsonify(erro = "Erro ao tentar criar um Modulo,     FAÇA O L"), 400
+            db.session.commit()
+            return jsonify({"message": "Modulo criada com sucesso", "modulo": modulo.id}), 201
+        except Exception as e:
+            print(f"Erro: {e}")
+            return jsonify(error="Erro ao tentar criar modulo", details=str(e)), 500
 
     @staticmethod
     def busca_nome(nome):
-        modulo = Modulo.query.filter_by(nome=nome).first()
+        return Modulo.query.filter_by(nome=nome).first()
         
-        if modulo:
-            return jsonify(message ="Modulo", dados =modulo), 200
-        else:
-            return jsonify(message ="Modulo nao encontrado"), 400
         
     @staticmethod
     def get_modulo():
