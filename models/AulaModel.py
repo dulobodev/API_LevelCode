@@ -1,35 +1,13 @@
-from schemas.AulaSchema import ClassCreate, ClassResponse
-from flask import jsonify
-from config.Database import db, Aula
+from config.Database import db
+from models.model import Aula
 
 class AulaModel:
-    @staticmethod
-    def criar_aula(body: ClassCreate):
-        try:
-            nova_aula = Aula(**body.dict())
-
-            db.session.add(nova_aula)
-            db.session.commit()
-
-            response = ClassResponse.from_orm(nova_aula)
-            return jsonify(message ='Aula criada com sucesso!', aula =response.dict()), 201
-        except:
-            return jsonify(erro = "Erro ao tentar criar uma Conquista,     FAÇA O L"), 400
 
     @staticmethod
     def busca_nome(titulo):
-        aula = Aula.query.filter_by(titulo=titulo).first()
+        return Aula.query.filter_by(titulo=titulo).first()
         
-        if aula:
-            return jsonify(message ="Aula:", dados =aula), 200
-        else:
-            return jsonify(message ="Aula nao encontrado"), 400
         
     @staticmethod
     def get_aula():
-        aula = db.session.query(Aula).all()
-        
-        if aula:
-            return jsonify(message ="Aula:", dados =aula), 200
-        else:
-            return jsonify(message ="Aula nao encontrado"), 400
+        return db.session.query(Aula).all()

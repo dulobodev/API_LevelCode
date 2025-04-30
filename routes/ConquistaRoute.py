@@ -6,14 +6,14 @@ from models.ConquistasModel import ConquistaModel
 
 conquista_bp = Blueprint('conquista', __name__)
 
-@conquista_bp.route('/register_conquista', endpoint='conquista1', methods=['POST'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@conquista_bp.route('/register', endpoint='conquista1', methods=['POST'])
 def register_conquista():
-    return ConquistaController.registrar_conquista(request.get_json())
+    return ConquistaController.registrar_conquista()
 
-@conquista_bp.route('/get_conquista', endpoint='conquista2', methods=['GET'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@conquista_bp.route('/adicionar', endpoint='conquista2', methods=['POST'])
+def add_conquista():
+    return ConquistaController.adicionar_conquista()
+
+@conquista_bp.route('/get', endpoint='conquista3', methods=['GET'])
 def get_conq():
     return ConquistaModel.get_conquista()

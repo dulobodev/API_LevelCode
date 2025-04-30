@@ -6,14 +6,10 @@ from models.RankingModel import RankingModel
 
 ranking_bp = Blueprint('ranking', __name__)
 
-@ranking_bp.route('/register_ranking', endpoint='ranking1', methods=['POST'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@ranking_bp.route('/register', endpoint='ranking1', methods=['POST'])
 def register_ranking():
-    return RankingControllers.registrar_ranking(request.get_json())
+    return RankingControllers.registrar_ranking()
 
-@ranking_bp.route('/get_ranking', endpoint='ranking2', methods=['GET'])
-@jwt_required
-@admin_required
+@ranking_bp.route('/get', endpoint='ranking2', methods=['GET'])
 def get_ranking():
     return RankingModel.get_ranking()

@@ -1,10 +1,11 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
-from schemas.UsuarioSchema import UserCreate
+from schemas.UsuarioSchema import UserCreate, UserLogin
 from schemas.RolesSchema import RolesCreate, PermissionCreate
 from models.UsuarioModel import UsuarioModel
 from models.RolesModel import RoleModel
-from config.Database import Role, Permission, Usuario, db
+from models.model import Usuario, Ranking, Role, Permission
+from config.Database import db
 from flask import jsonify, request
 from dotenv import load_dotenv
 import re
@@ -60,43 +61,62 @@ class AdminController:
             return jsonify(error="Erro ao tentar criar role", details=str(e)), 500
 
     @staticmethod
-    def registrar_admin(dados: UserCreate):
-        novo_usuario = Usuario(
-        nome = dados['nome'],
-        email = dados['email'],
-        senha = dados['senha'],
-        roles_id = dados['roles_id']
-        )
+    def registrar_admin():
+        try:
+            body = UserCreate(**request.get_json())
 
-        if not senha_forte(novo_usuario.senha):
-            return jsonify(erro ="A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."), 400
-        if UsuarioModel.busca_email(novo_usuario.email):
-            return jsonify(error ="E-mail já cadastrado"), 422
-        novo_usuario.senha = generate_password_hash(novo_usuario.senha)
-        role = Role.query.get(novo_usuario.roles_id)
-    
-        if not role:
-            return jsonify(erro="Role não encontrada"), 400
-    
-        return UsuarioModel.criar_usuario(novo_usuario)
+            novo_admin = Usuario(
+                nome = body.nome,
+                email = body.email,
+                senha = body.senha,
+                roles_id = body.roles_id,
+                ranking_id = body.ranking_id
+            )
+
+            if not senha_forte(novo_admin.senha):
+                return jsonify(erro ="A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais."), 400
+            if UsuarioModel.busca_email(novo_admin.email):
+                return jsonify(error ="E-mail já cadastrado"), 422
+            novo_admin.senha = generate_password_hash(novo_admin.senha)
+            role = Role.query.get(novo_admin.roles_id)
+        
+            if not role:
+                return jsonify(erro="Role não encontrada"), 404
+            
+            ranking = Ranking.query.get(novo_admin.ranking_id)
+            if not ranking:
+                return jsonify(erro="Ranking não encontrado"), 404
+        
+            db.session.add(novo_admin)
+            db.session.commit()
+            return jsonify({"message": "Admin criado com sucesso", "user_id": novo_admin.id}), 201
+        except Exception as e:
+            print(f"Erro: {e}")
+            return jsonify(error="Erro ao tentar criar um novo admin", details=str(e)), 500
+
 
 
     @staticmethod
-    def login_admin(dados: UserCreate):
-        validate = Usuario(
-            nome = dados['nome'],
-            senha = dados['senha']
-        )
+    def login_admin():
+        try:
+            body = UserLogin(**request.get_json())
 
-        usuario = UsuarioModel.busca_nome(validate.nome)
-        if usuario and check_password_hash(usuario.senha, validate.senha):
-            role = Role.query.get(usuario.roles_id)
+            validate = Usuario(
+            nome = body.nome,
+            senha= body.senha
+            )
 
-            token = create_access_token(
-            identity=str(usuario.id),  # <- identity deve ser string!
-            additional_claims={
-                "role": role.nome,"permissions": [p.nome for p in role.permissions]})
+            usuario = UsuarioModel.busca_nome(validate.nome)
+            if usuario and check_password_hash(usuario.senha, validate.senha):
+                role = Role.query.get(usuario.roles_id)
 
+                # Agora, extraia as permissões do role
+                permissoes = [p.nome for p in role.permissions]
 
-            return jsonify(acesstoken =token), 200
-        return jsonify(erro ="Nome do usuario ou senha invalidos."), 401
+                token = create_access_token(identity=str(usuario.id),additional_claims={"role": role.nome,"permissions": permissoes})
+                
+                return jsonify({"access_token": token}), 200
+        except Exception as e:
+            print(f"Erro: {e}")
+            return jsonify(error="Nome do administrador ou senha invalidos", details=str(e)), 401
+

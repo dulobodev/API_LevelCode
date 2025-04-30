@@ -3,13 +3,13 @@ from pydantic import BaseModel
 
 class ChallengeBase(BaseModel):
     nome: str
-    desafio: str
+    descricao: str
     requisitos: str
     resultado: str
     xp: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ChallengeCreate(ChallengeBase):

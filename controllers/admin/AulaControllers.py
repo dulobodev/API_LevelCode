@@ -1,19 +1,33 @@
 from models.AulaModel import AulaModel
+from models.model import Aula
 from schemas.AulaSchema import ClassCreate
-from flask import jsonify
+from flask import jsonify, request
+from config.Database import db
 
 
 class AulaController:
 
     @staticmethod
-    def registrar_aula(dados: ClassCreate):
-        titulo = dados.titulo
-        conteudo = dados.conteudo
-        modulo_id = dados.modulo_id
-        xp = dados.xp
+    def registrar_aula():
+        try:
+            body = ClassCreate(**request.get_json())
 
-        if AulaModel.busca_nome(titulo):
-            return jsonify(erro ="Já existe uma aula com esse titulo."), 422
-        AulaModel.criar_modulo(titulo, conteudo, modulo_id, xp)
+            if AulaModel.busca_nome(body.titulo):
+                return jsonify({"error": "Essa aula já existe"}), 422
+
+            aula = Aula(
+                titulo = body.titulo,
+                conteudo = body.conteudo,
+                modulo_id = body.modulo_id,
+                xp = body.xp
+
+                )
+            
+            db.session.add(aula)
+            db.session.commit()
+            return jsonify({"message": "Aula criada com sucesso", "aula_id": aula.id}), 201
+        except Exception as e:
+            print(f"Erro: {e}")
+            return jsonify(error="Erro ao tentar criar aula", details=str(e)), 500
 
 

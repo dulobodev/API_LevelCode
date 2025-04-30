@@ -8,7 +8,7 @@ class ClassBase(BaseModel):
     xp: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ClassCreate(ClassBase):

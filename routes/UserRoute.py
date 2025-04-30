@@ -7,8 +7,8 @@ user_bp = Blueprint('users', __name__)
 
 @user_bp.route('/register', endpoint='user1', methods=['POST'])
 def register_user():
-    return UsuarioControllers.registrar_usuario(request.get_json())
+    return UsuarioControllers.registrar_usuario()
 
 @user_bp.route('/login', endpoint='user2', methods=['POST'])
 def login_user():
-    return UsuarioControllers.login(request.get_json())
+    return UsuarioControllers.login()

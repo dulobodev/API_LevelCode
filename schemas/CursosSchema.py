@@ -1,13 +1,12 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
 
 class ModuleCreate(BaseModel):
     nome: str
 
     class Config:
-        orm_mode = True
-
+        from_attributes = True
 
 class CourseBase(BaseModel):
     titulo: str
@@ -16,7 +15,7 @@ class CourseBase(BaseModel):
     xp_total: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CourseCreate(CourseBase):

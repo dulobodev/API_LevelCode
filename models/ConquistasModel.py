@@ -1,34 +1,16 @@
-from schemas.ConquistaSchema import ConquestBase, ConquestResponse
-from flask import jsonify
-from config.Database import db, Conquista
+from config.Database import db
+from models.model import Conquista, UsuarioConquista
+
 
 class ConquistaModel:
     @staticmethod
-    def criar_conquista(body: ConquestBase, bodyresponse:ConquestResponse):
-        try:
-            nova_conquista = Conquista(**body.dict())
+    def busca_nome(nome):
+        return Conquista.query.filter_by(nome=nome).first()
+    
+    def verifica_conquista(usuario_id):
+        return UsuarioConquista.query.filter_by(usuario_id=usuario_id).first()
 
-            db.session.add(nova_conquista)
-            db.session.commit()
-
-            return jsonify(message = 'Conquista criado com sucesso!', conquista = bodyresponse.dict()), 201
-        except:
-            return jsonify(erro = "Erro ao tentar criar uma Conquista,     FAÇA O L"), 400
-
-    @staticmethod
-    def busca_nome(body: ConquestBase, nome):
-        conquista = Conquista.query.filter_by(nome=nome).first()
-
-        if conquista:
-            return jsonify(message = "Conquista:", dados = conquista), 200
-        else:
-            return jsonify(message = "Conquista nao encontrado"), 400
-        
     @staticmethod
     def get_conquista():
-        conquista = db.session.query(Conquista).all()
-
-        if conquista:
-            return jsonify(message = "Conquista:", dados = conquista), 200
-        else:
-            return jsonify(message = "Conquista nao encontrado"), 400
+        return db.session.query(Conquista).all()
+    

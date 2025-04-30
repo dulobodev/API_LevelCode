@@ -5,7 +5,7 @@ class PermissionCreate(BaseModel):
     nome: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         schema_extra = {
             "example": {
                 "nome": "nome_da_permissao"

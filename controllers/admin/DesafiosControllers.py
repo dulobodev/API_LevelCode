@@ -1,21 +1,35 @@
 from models.DesafiosModel import DesafioModel
+from models.model import Desafio
 from schemas.DesafiosSchema import ChallengeCreate
-from flask import jsonify
+from flask import jsonify, request
+from config.Database import db
 
 
 class DesafioController:
 
     @staticmethod
-    def registrar_desafio(dados: ChallengeCreate):
-        nome = dados.nome
-        desafio = dados.desafio
-        requisitos = dados.requisitos
-        resultado = dados.resultado
-        xp = dados.xp
+    def registrar_desafio():
+        try:
+            body = ChallengeCreate(**request.get_json())
 
-        if DesafioModel.busca_nome(nome):
-            return jsonify(erro ="Já existe um Desafio com esse nome."), 422
-        DesafioModel.criar_modulo(nome, desafio, requisitos, resultado, xp)
+            if DesafioModel.busca_nome(body.nome):
+                return jsonify({"error": "Esse desafio já existe"}), 422
+
+            desafio = Desafio(
+            nome = body.nome,
+            descricao = body.descricao,
+            requisitos = body.requisitos,
+            resultado = body.resultado,
+            xp = body.xp
+            )
+
+            db.session.add(desafio)
+            db.session.commit()
+            return jsonify({"message": "Desafio criado com sucesso", "desafio_id": desafio.id}), 201
+        except Exception as e:
+            print(f"Erro: {e}")
+            return jsonify(error="Erro ao tentar criar desafio", details=str(e)), 500
+        
 
 
 

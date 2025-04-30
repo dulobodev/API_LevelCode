@@ -6,14 +6,10 @@ from models.AulaModel import AulaModel
 
 aula_bp = Blueprint('aula', __name__)
 
-@aula_bp.route('/register_aula', endpoint='aula1',methods=['POST'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@aula_bp.route('/register', endpoint='aula1',methods=['POST'])
 def register_aula():
-    return AulaController.registrar_aula(request.get_json())
+    return AulaController.registrar_aula()
 
-@aula_bp.route('/get_aula', endpoint='aula2',methods=['GET'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@aula_bp.route('/get', endpoint='aula2',methods=['GET'])
 def get():
     return AulaModel.get_aula()

@@ -6,14 +6,10 @@ from models.CursoModel import CursoModel
 
 curso_bp = Blueprint('curso', __name__)
 
-@curso_bp.route('/register_curso', endpoint='curso1', methods=['POST'])
-@jwt_required()
-@admin_required('PoderAdemiro')
+@curso_bp.route('/register', endpoint='curso1', methods=['POST'])
 def register_curso():
     return CursoController.registrar_curso()
 
-@curso_bp.route('/get_curso', endpoint='cruso2', methods=['GET'])
-@jwt_required()
-@admin_required('PoderAdemiro')
+@curso_bp.route('/get', endpoint='cruso2', methods=['GET'])
 def get_c():
     return CursoModel.get_curso()

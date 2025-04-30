@@ -20,10 +20,10 @@ def register_role():
     return RoleModel.get()
 
 
-@admin_bp.route('/register_admin', endpoint='admin3',methods=['POST'])
+@admin_bp.route('/register', endpoint='admin3',methods=['POST'])
 def register_admin():
-    return AdminController.registrar_admin(request.get_json())
+    return AdminController.registrar_admin()
 
-@admin_bp.route('/login_admin', endpoint='admin4',methods=['POST'])
+@admin_bp.route('/login', endpoint='admin4',methods=['POST'])
 def login():
-    return AdminController.login_admin(request.get_json())
+    return AdminController.login_admin()

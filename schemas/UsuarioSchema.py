@@ -1,5 +1,4 @@
-from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -10,17 +9,16 @@ class UserBase(BaseModel):
     nivel: int = 0
     xp_total: int = 0
     roles_id: int 
+    ranking_id : int = 1
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserCreate(UserBase):
     pass
 
 
-class UserResponse(UserBase):
-    id: int
-
-    class Config:
-        from_attributes = True
+class UserLogin(BaseModel):
+    nome : str
+    senha : str

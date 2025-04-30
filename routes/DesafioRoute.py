@@ -6,14 +6,10 @@ from models.DesafiosModel import DesafioModel
 
 desafio_bp = Blueprint('desafio', __name__)
 
-@desafio_bp.route('/register_desafio', endpoint='desafio1', methods=['POST'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@desafio_bp.route('/register', endpoint='desafio1', methods=['POST'])
 def register_desafio():
-    return DesafioController.registrar_desafio(request.get_json())
+    return DesafioController.registrar_desafio()
 
-@desafio_bp.route('/get_desafio', endpoint='desafio2', methods=['GET'])
-@jwt_required
-@admin_required('PoderAdemiro')
+@desafio_bp.route('/get', endpoint='desafio2', methods=['GET'])
 def get_def():
     return DesafioModel.get_desafio()

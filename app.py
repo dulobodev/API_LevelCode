@@ -2,10 +2,6 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from config.Database import db
 from routes.Blueprints.blueprints import register_blueprints
-from middleware.CreateSuperadmin import criar_tudo
-
-# Execute esse comando no terminal para aplicar as migrations:
-# flask db upgrade
 
 app = Flask(__name__)
 

@@ -6,11 +6,10 @@ class RankingBase(BaseModel):
     nome: str
     privilegios: str
     requisitos: str
-    created_date: datetime
-    user_id: int
+
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RankingCreate(RankingBase):
