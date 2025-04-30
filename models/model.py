@@ -58,6 +58,7 @@ class Usuario(db.Model):
     roles_id: Mapped[int] = mapped_column(ForeignKey('roles.id'))
     ranking_id: Mapped[int] = mapped_column(ForeignKey("ranking.id"))
 
+    cursos_inscritos: Mapped[List["UsuarioCurso"]] = relationship("UsuarioCurso", back_populates="usuario")
     ranking: Mapped[Ranking] = relationship("Ranking", back_populates="usuarios")
     conquistas: Mapped[List["UsuarioConquista"]] = relationship("UsuarioConquista", back_populates="usuario")
     progresso: Mapped[List["Progresso"]] = relationship("Progresso", back_populates="usuario")
@@ -99,6 +100,7 @@ class Curso(db.Model):
     xp_total: Mapped[int] = mapped_column(nullable=False)
     modulo_id: Mapped[int] = mapped_column(ForeignKey("modulos.id"), nullable=True)
 
+    inscritos: Mapped[List["UsuarioCurso"]] = relationship("UsuarioCurso", back_populates="curso")
     modulos: Mapped[List[Modulo]] = relationship("Modulo", secondary=table_curso_modulo, back_populates="cursos")
 
 class Aula(db.Model):
@@ -116,7 +118,7 @@ class Progresso(db.Model):
     __tablename__ = 'progresso'
     id: Mapped[int] = mapped_column(primary_key=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
-    data_conclusao: Mapped[str] = mapped_column(String(10), nullable=False)
+    data_conclusao: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
     modulo_id: Mapped[int] = mapped_column(ForeignKey("modulos.id"))
     aula_id: Mapped[int] = mapped_column(ForeignKey("aulas.id"))
@@ -133,3 +135,15 @@ class Desafio(db.Model):
     requisitos: Mapped[str] = mapped_column(String(500), nullable=False)
     resultado: Mapped[str] = mapped_column(String(300), nullable=False)
     xp: Mapped[int] = mapped_column(nullable=False)
+
+class UsuarioCurso(db.Model):
+    __tablename__ = 'usuarios_cursos'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
+    curso_id: Mapped[int] = mapped_column(ForeignKey("cursos.id"))
+    data_inicio: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    data_fim: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="em progresso", nullable=False)
+
+    usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="cursos_inscritos")
+    curso: Mapped["Curso"] = relationship("Curso", back_populates="inscritos")

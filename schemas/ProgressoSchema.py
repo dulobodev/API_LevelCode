@@ -3,9 +3,8 @@ from pydantic import BaseModel
 
 class ProgressBase(BaseModel):
     status: str
-    data_conclusao: str
-    user_id: int
-    module_id: int
+    usuario_id: int
+    aula_id : int
 
     class Config:
         from_attributes = True

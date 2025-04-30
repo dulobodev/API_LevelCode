@@ -25,3 +25,7 @@ class CourseCreate(CourseBase):
 class CourseResponse(CourseBase):
     id: int
     modulos: List[ModuleCreate]
+
+class UsuarioCursoCreate(BaseModel):
+    user_id : int
+    curso_id : int
