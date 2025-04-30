@@ -1,3 +1,8 @@
+"""
+This Python code defines a Flask Blueprint with routes for registering and retrieving modules, which
+require JWT authentication and admin role validation.
+:return: The code snippet provided defines a Flask Blueprint named `modulo_bp` with two routes:
+"""
 from flask import Blueprint
 from flask_jwt_extended import jwt_required
 from middleware.RolesValidate import admin_required
@@ -13,5 +18,7 @@ def register_modulo():
     return ModuloControllers.registrar_modulo()
 
 @modulo_bp.route('/get', endpoint='modulo2', methods=['GET'])
+@jwt_required()
+@admin_required('PoderAdemiro')
 def get_mod():
     return ModuloModel.get_modulo()

@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 from config.Database import db
 
+# Tabelas de associação para relacionamentos muitos-para-muitos
 
 table_role_permission = Table(
     'role_permission',
@@ -12,6 +13,9 @@ table_role_permission = Table(
     db.Column('role_id', ForeignKey('roles.id'), primary_key=True),
     db.Column('permission_id', ForeignKey('permissions.id'), primary_key=True)
 )
+"""
+Tabela de associação entre 'Role' e 'Permission' para um relacionamento muitos-para-muitos.
+"""
 
 table_curso_modulo = Table(
     'curso_modulo',
@@ -19,9 +23,17 @@ table_curso_modulo = Table(
     db.Column('curso_id', ForeignKey('cursos.id'), primary_key=True),
     db.Column('modulo_id', ForeignKey('modulos.id'), primary_key=True)
 )
+"""
+Tabela de associação entre 'Curso' e 'Modulo' para um relacionamento muitos-para-muitos.
+"""
 
+# Modelos principais
 
 class Role(db.Model):
+    """
+    Representa os papéis (roles) no sistema, como Admin, Usuário, etc.
+    Um papel pode ter várias permissões e ser atribuído a vários usuários.
+    """
     __tablename__ = 'roles'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
@@ -30,6 +42,10 @@ class Role(db.Model):
     users: Mapped[List["Usuario"]] = relationship("Usuario", back_populates="role")
 
 class Permission(db.Model):
+    """
+    Representa as permissões no sistema, como 'criar', 'editar', 'deletar', etc.
+    Uma permissão pode ser associada a vários papéis (roles).
+    """
     __tablename__ = 'permissions'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
@@ -37,6 +53,10 @@ class Permission(db.Model):
     roles: Mapped[List["Role"]] = relationship("Role", secondary=table_role_permission, back_populates="permissions")
 
 class Ranking(db.Model):
+    """
+    Representa um ranking no sistema, que define privilégios e requisitos para os usuários.
+    Os usuários podem ser atribuídos a um ranking específico.
+    """
     __tablename__ = 'ranking'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(80), nullable=False)
@@ -47,6 +67,10 @@ class Ranking(db.Model):
     usuarios: Mapped[List["Usuario"]] = relationship("Usuario", back_populates="ranking")
 
 class Usuario(db.Model):
+    """
+    Representa um usuário no sistema, que possui dados pessoais, progresso, conquistas, e um ranking.
+    O usuário também pode ter vários papéis e cursos.
+    """
     __tablename__ = 'usuarios'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(60), nullable=False)
@@ -65,6 +89,10 @@ class Usuario(db.Model):
     role: Mapped[Role] = relationship("Role", back_populates="users")
 
 class UsuarioConquista(db.Model):
+    """
+    Representa uma conquista desbloqueada por um usuário.
+    Cada conquista é associada a um usuário e a um conjunto de critérios.
+    """
     __tablename__ = 'usuarios_conquistas'
     id: Mapped[int] = mapped_column(primary_key=True)
     usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
@@ -75,6 +103,9 @@ class UsuarioConquista(db.Model):
     conquista: Mapped["Conquista"] = relationship("Conquista", back_populates="usuarios_conquista")
 
 class Conquista(db.Model):
+    """
+    Define as conquistas no sistema, que os usuários podem alcançar ao atender certos critérios.
+    """
     __tablename__ = 'conquistas'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -83,6 +114,9 @@ class Conquista(db.Model):
     usuarios_conquista: Mapped[List[UsuarioConquista]] = relationship("UsuarioConquista", back_populates="conquista")
 
 class Modulo(db.Model):
+    """
+    Representa um módulo dentro de um curso. Cada módulo contém várias aulas.
+    """
     __tablename__ = 'modulos'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(60), nullable=False)
@@ -92,6 +126,10 @@ class Modulo(db.Model):
     progresso: Mapped[List["Progresso"]] = relationship("Progresso", back_populates="modulo")
 
 class Curso(db.Model):
+    """
+    Representa um curso no sistema, com título, descrição e XP total. 
+    Cada curso pode ter múltiplos módulos e ser acessado por vários usuários.
+    """
     __tablename__ = 'cursos'
     id: Mapped[int] = mapped_column(primary_key=True)
     titulo: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -104,6 +142,9 @@ class Curso(db.Model):
     modulos: Mapped[List[Modulo]] = relationship("Modulo", secondary=table_curso_modulo, back_populates="cursos")
 
 class Aula(db.Model):
+    """
+    Representa uma aula dentro de um módulo, com título, conteúdo e XP atribuído.
+    """
     __tablename__ = 'aulas'
     id: Mapped[int] = mapped_column(primary_key=True)
     titulo: Mapped[str] = mapped_column(String(60), nullable=False)
@@ -115,6 +156,9 @@ class Aula(db.Model):
     progresso: Mapped[List["Progresso"]] = relationship("Progresso", back_populates="aula")
 
 class Progresso(db.Model):
+    """
+    Rastreia o progresso de um usuário em relação a uma aula ou módulo específico.
+    """
     __tablename__ = 'progresso'
     id: Mapped[int] = mapped_column(primary_key=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
@@ -128,22 +172,12 @@ class Progresso(db.Model):
     aula: Mapped[Aula] = relationship("Aula", back_populates="progresso")
 
 class Desafio(db.Model):
+    """
+    Representa um desafio que os usuários podem participar, com descrição, requisitos e recompensa de XP.
+    """
     __tablename__ = 'desafios'
     id: Mapped[int] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column(String(50), nullable=False)
-    descricao : Mapped[str] = mapped_column(String(3000), nullable=False)
+    descricao: Mapped[str] = mapped_column(String(3000), nullable=False)
     requisitos: Mapped[str] = mapped_column(String(500), nullable=False)
-    resultado: Mapped[str] = mapped_column(String(300), nullable=False)
-    xp: Mapped[int] = mapped_column(nullable=False)
-
-class UsuarioCurso(db.Model):
-    __tablename__ = 'usuarios_cursos'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
-    curso_id: Mapped[int] = mapped_column(ForeignKey("cursos.id"))
-    data_inicio: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    data_fim: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
-    status: Mapped[str] = mapped_column(String(20), default="em progresso", nullable=False)
-
-    usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="cursos_inscritos")
-    curso: Mapped["Curso"] = relationship("Curso", back_populates="inscritos")
+    resultado: Mapped[str] = mapped_column

@@ -1,6 +1,10 @@
-from flask import Blueprint, request
-from flask_jwt_extended import jwt_required
-from middleware.RolesValidate import admin_required
+"""
+The code defines Flask routes for user registration and login using a Blueprint.
+:return: The `register_user()` function returns the result of the
+`UsuarioControllers.registrar_usuario()` method, and the `login_user()` function returns the result
+of the `UsuarioControllers.login()` method.
+"""
+from flask import Blueprint
 from controllers.UsuarioController import UsuarioControllers
 
 user_bp = Blueprint('users', __name__)
