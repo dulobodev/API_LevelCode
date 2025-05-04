@@ -29,6 +29,18 @@ Tabela de associação entre 'Curso' e 'Modulo' para um relacionamento muitos-pa
 
 # Modelos principais
 
+class UsuarioCurso(db.Model):
+    __tablename__ = 'usuarios_cursos'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
+    curso_id: Mapped[int] = mapped_column(ForeignKey("cursos.id"))
+    data_inicio: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    data_fim: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="em progresso", nullable=False)
+
+    usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="cursos_inscritos")
+    curso: Mapped["Curso"] = relationship("Curso", back_populates="inscritos")
+
 class Role(db.Model):
     """
     Representa os papéis (roles) no sistema, como Admin, Usuário, etc.

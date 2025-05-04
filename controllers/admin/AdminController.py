@@ -12,7 +12,7 @@ import re
 
 # Função que valida a força da senha
 def senha_forte(senha):
-    """
+    """'
     Verifica se a senha possui pelo menos 8 caracteres, 
     incluindo letras maiúsculas, minúsculas, números e caracteres especiais.
     

@@ -20,11 +20,11 @@ class UserCurso:
         try:
             body = UsuarioCursoCreate(**request.get_json())
 
-            if UsuarioCurso.query.filter_by(usuario_id=body.usuario_id, curso_id=body.curso_id).first():
+            if UsuarioCurso.query.filter_by(user_id=body.user_id, curso_id=body.curso_id).first():
                 return jsonify({"error": "Usuário já está inscrito neste curso"}), 422
 
             nova_inscricao = UsuarioCurso(
-                usuario_id=body.usuario_id,
+                user_id=body.user_id,
                 curso_id=body.curso_id,
                 status="em progresso"
             )

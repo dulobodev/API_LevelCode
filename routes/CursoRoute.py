@@ -21,11 +21,13 @@ def register_curso():
 @curso_bp.route('/concluir', endpoint='cruso2', methods=['POST'])
 @jwt_required()
 @admin_required('PoderAdemiro')
-@jwt_required()
-@admin_required('PoderAdemiro')
 def concluir():
     return UserCurso.concluir_aula()
 
-@curso_bp.route('/get', endpoint='cruso3', methods=['GET'])
+@curso_bp.route('/inscricao', endpoint='cruso3', methods=['POST'])
+def concluir():
+    return UserCurso.inscrever_usuario()
+
+@curso_bp.route('/get', endpoint='cruso4', methods=['GET'])
 def get_c():
     return CursoModel.get_curso()
